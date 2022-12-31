@@ -1,75 +1,84 @@
-/*
+// Adafruit Motor shield library
+// copyright Adafruit Industries LLC, 2009
+// this code is public domain, enjoy!
+#include <HCSR04.h>
 
-  Arduino Bluetooth Controlled Car
-  Install Adafruit Motor Shield Library before uploading this code.
-  AFMotor Library https://learn.adafruit.com/adafruit-motor-shield/library-install
-
-  -> If you need helping guide on how to install library for the motor shield or how to use motor shield then
-     watch this: https://youtu.be/vooJEyco1J4
-
-     Caution: Remove the jumper or switch off the battery switch before connecting the Arduino board to computer.
-
-     For more support contact me on Telegram: @UtGoTech
-
-
-*/
-
+#define trigPin1 A2
+#define echoPin1 A5
+#define trigPin2 A3
+#define echoPin2 A4
 
 #include <AFMotor.h>
-#include <SoftwareSerial.h>
+int counter = 0;
+int zerocount = 0;
+AF_DCMotor motor1(1);
+int finded = 0;
+AF_DCMotor motor2(2);
+AF_DCMotor motor3(3);
+AF_DCMotor motor4(4);
+void setup() {
+  Serial.begin(9600);           // set up Serial library at 9600 bps
+  Serial.println("Motor test!");
+  pinMode(trigPin1,OUTPUT);
+  pinMode(echoPin1,INPUT);
+  pinMode(trigPin2,OUTPUT);
+  pinMode(echoPin2,INPUT);
 
-//Create a software serial object in pin 48 and 49
-SoftwareSerial bluetoothSerial(48, 49);
-//initial motors pin
-AF_DCMotor motor1(1, MOTOR12_1KHZ);
-AF_DCMotor motor2(2, MOTOR12_1KHZ);
-AF_DCMotor motor3(3, MOTOR34_1KHZ);
-AF_DCMotor motor4(4, MOTOR34_1KHZ);
-
-char command;
-
-void setup()
-{
-  bluetoothSerial.begin(9600);  //Set the baud rate to your Bluetooth module.
+  // turn on motor
+  MoveBack();
+ 
 }
 
 void loop() {
-  if (bluetoothSerial.available() > 0) {
-    command = bluetoothSerial.read();
 
-    Stop(); //initialize with motors stoped
-    
-    switch (command) {
-      case 'F':
-        forward();
-        break;
-      case 'B':
-        back();
-        break;
-      case 'L':
-        left();
-        break;
-      case 'R':
-        right();
-        break;
+
+ int shit = UFun(trigPin1,echoPin1);
+ Serial.println(shit);
+
+   while(UFun(trigPin1,echoPin1)==0){
+    return;
     }
+
+if(shit > 10){
+  zerocount++;
+}
+
+if(zerocount < 70){
+  return;
+}
+
+if(finded == 1){
+   MoveRight();
+   delay(2000);
+    while(UFun(trigPin2,echoPin2) > 10){
+    MoveFront();
+    }
+    Stop();
+   delay(5000);
+   return;
+}
+
+
+  Serial.println(UFun(trigPin1,echoPin1));
+  int moom = UFun(trigPin1,echoPin1);
+  if (moom < 10 && moom > 0) {
+    Stop();
+    delay(1000);
+    finded = 1;
+    }
+  
+  else{
+    MoveBack();
   }
+
+  counter++;
+
 }
 
-void forward()
-{
-  motor1.setSpeed(255); //Define maximum velocity
-  motor1.run(FORWARD);  //rotate the motor clockwise
-  motor2.setSpeed(255); //Define maximum velocity
-  motor2.run(FORWARD);  //rotate the motor clockwise
-  motor3.setSpeed(255); //Define maximum velocity
-  motor3.run(FORWARD);  //rotate the motor clockwise
-  motor4.setSpeed(255); //Define maximum velocity
-  motor4.run(FORWARD);  //rotate the motor clockwise
-}
 
-void back()
-{
+  void MoveBack(){
+  // Turn on motor A
+      
   motor1.setSpeed(255); //Define maximum velocity
   motor1.run(BACKWARD); //rotate the motor anti-clockwise
   motor2.setSpeed(255); //Define maximum velocity
@@ -78,10 +87,13 @@ void back()
   motor3.run(BACKWARD); //rotate the motor anti-clockwise
   motor4.setSpeed(255); //Define maximum velocity
   motor4.run(BACKWARD); //rotate the motor anti-clockwise
-}
+  
+  
+  }
+void MoveLeft(){
 
-void left()
-{
+  // Turn on motor A
+
   motor1.setSpeed(255); //Define maximum velocity
   motor1.run(BACKWARD); //rotate the motor anti-clockwise
   motor2.setSpeed(255); //Define maximum velocity
@@ -89,23 +101,27 @@ void left()
   motor3.setSpeed(255); //Define maximum velocity
   motor3.run(FORWARD);  //rotate the motor clockwise
   motor4.setSpeed(255); //Define maximum velocity
-  motor4.run(FORWARD);  //rotate the motor clockwise
-}
+  motor4.run(FORWARD);  //rotate the motor clockwise  
 
-void right()
-{
-  motor1.setSpeed(255); //Define maximum velocity
+  }
+void MoveFront(){
+      
+    // Turn on motor A
+
+motor1.setSpeed(255); //Define maximum velocity
   motor1.run(FORWARD);  //rotate the motor clockwise
   motor2.setSpeed(255); //Define maximum velocity
   motor2.run(FORWARD);  //rotate the motor clockwise
   motor3.setSpeed(255); //Define maximum velocity
-  motor3.run(BACKWARD); //rotate the motor anti-clockwise
+  motor3.run(FORWARD); //rotate the motor anti-clockwise
   motor4.setSpeed(255); //Define maximum velocity
-  motor4.run(BACKWARD); //rotate the motor anti-clockwise
+  motor4.run(FORWARD); //rotate the motor anti-clockwise
 }
 
-void Stop()
-{
+     
+void Stop(){
+  // Now turn off motors
+ 
   motor1.setSpeed(0);  //Define minimum velocity
   motor1.run(RELEASE); //stop the motor when release the button
   motor2.setSpeed(0);  //Define minimum velocity
@@ -114,4 +130,48 @@ void Stop()
   motor3.run(RELEASE); //stop the motor when release the button
   motor4.setSpeed(0);  //Define minimum velocity
   motor4.run(RELEASE); //stop the motor when release the button
+  
+  }
+void MoveForward() {
+    // Turn on motor A
+
+  motor1.setSpeed(255); //Define maximum velocity
+  motor1.run(FORWARD);  //rotate the motor clockwise
+  motor2.setSpeed(255); //Define maximum velocity
+  motor2.run(FORWARD);  //rotate the motor clockwise
+  motor3.setSpeed(255); //Define maximum velocity
+  motor3.run(FORWARD);  //rotate the motor clockwise
+  motor4.setSpeed(255); //Define maximum velocity
+  motor4.run(FORWARD);  //rotate the motor clockwise
+
+
 }
+
+void MoveRight(){
+      
+    // Turn on motor A
+
+motor1.setSpeed(255); //Define maximum velocity
+  motor1.run(FORWARD);  //rotate the motor clockwise
+  motor2.setSpeed(200); //Define maximum velocity
+  motor2.run(BACKWARD);  //rotate the motor clockwise
+  motor3.setSpeed(200); //Define maximum velocity
+  motor3.run(BACKWARD); //rotate the motor anti-clockwise
+  motor4.setSpeed(255); //Define maximum velocity
+  motor4.run(FORWARD); //rotate the motor anti-clockwise
+}
+
+int UFun(int triger , int echo){//ultrasonic reading 
+   long duration ;
+   int distance;
+        digitalWrite(triger,LOW);
+        delayMicroseconds(2);
+        digitalWrite(triger, HIGH);
+        delayMicroseconds(10);
+        digitalWrite(triger,LOW);
+    
+        duration = pulseIn(echo,HIGH);
+        distance = duration/2 /29.1 ; // 331.5 m/s ===> 0 C.....331.5 +0.6*temp....343.5*100/1000000=.03435cm/us
+  return distance; 
+  
+  }
