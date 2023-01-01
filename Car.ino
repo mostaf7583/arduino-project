@@ -13,6 +13,8 @@ int counter = 0;
 int zerocount = 0;
 AF_DCMotor motor1(1);
 int finded = 0;
+int finded2 = 0;
+int parked = 0;
 AF_DCMotor motor2(2);
 AF_DCMotor motor3(3);
 AF_DCMotor motor4(4);
@@ -29,39 +31,45 @@ void setup() {
  
 }
 
+
 void loop() {
 
+  if(parked == 1){
+    return;
+  }
 
- int shit = UFun(trigPin1,echoPin1);
- Serial.println(shit);
 
    while(UFun(trigPin1,echoPin1)==0){
     return;
     }
 
-if(shit > 10){
-  zerocount++;
-}
-
-if(zerocount < 70){
+if(finded2 ==1 ){
+  MoveLeft();
+  delay(900);
+  MoveBack();
+  delay(500);
+  Stop();
+  parked = 1;
   return;
+
 }
 
 if(finded == 1){
    MoveRight();
-   delay(2000);
-    while(UFun(trigPin2,echoPin2) > 10){
+   delay(1000);
+    while(UFun(trigPin2,echoPin2) > 20){
     MoveFront();
     }
     Stop();
-   delay(5000);
+  finded2 = 1;
+   delay(2000);
    return;
 }
 
 
   Serial.println(UFun(trigPin1,echoPin1));
   int moom = UFun(trigPin1,echoPin1);
-  if (moom < 10 && moom > 0) {
+  if (moom < 20) {
     Stop();
     delay(1000);
     finded = 1;
@@ -94,14 +102,14 @@ void MoveLeft(){
 
   // Turn on motor A
 
-  motor1.setSpeed(255); //Define maximum velocity
-  motor1.run(BACKWARD); //rotate the motor anti-clockwise
-  motor2.setSpeed(255); //Define maximum velocity
-  motor2.run(BACKWARD); //rotate the motor anti-clockwise
-  motor3.setSpeed(255); //Define maximum velocity
-  motor3.run(FORWARD);  //rotate the motor clockwise
+motor1.setSpeed(255); //Define maximum velocity
+  motor1.run(BACKWARD);  //rotate the motor clockwise
+  motor2.setSpeed(200); //Define maximum velocity
+  motor2.run(FORWARD);  //rotate the motor clockwise
+  motor3.setSpeed(200); //Define maximum velocity
+  motor3.run(FORWARD); //rotate the motor anti-clockwise
   motor4.setSpeed(255); //Define maximum velocity
-  motor4.run(FORWARD);  //rotate the motor clockwise  
+  motor4.run(BACKWARD); //rotate the motor anti-clockwise
 
   }
 void MoveFront(){
